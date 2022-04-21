@@ -17,11 +17,6 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-rl.question('Who are you?', name => {
-  console.log(`Hey there ${name}!`);
-  readline.close();
-});
-
 /* can create accounts with only memmonics */ 
 const account = new MnemonicKey({
   mnemonic: MEM,
@@ -34,27 +29,34 @@ const anchorEarn = new AnchorEarn({
       address: ADDR,
 });
 
-const deposit_function = async (amount) => {
-  const deposit = await anchorEarn.deposit({
-    currency: DENOMS.UST,
-    amount: String(amount), // 12.345 UST or 12345000 uusd
-  });
+const deposit_function = async () => {
+  rl.question("Amount to deposit: ", async input => {
+    const deposit = await anchorEarn.deposit({
+      currency: DENOMS.UST,
+      amount: String(input), // 12.345 UST or 12345000 uusd
+    });
+    console.log("Deposited: " + input)
+    console.log("New Balance" + retrieve_balance()); 
+    return deposit;
+  }); 
 
-  console.log("Deposited: " + amount)
-  console.log("New Balance" + retrieve_balance()); 
-  return deposit; 
+  rl.close();    
 }
 
 /* Function to withdraw money from main lending account */ 
-const withdraw_function = async (amount) => {
-  const withdraw = await anchorEarn.withdraw({
-    currency: DENOMS.UST,
-    amount: String(amount), // 12.345 UST or 12345000 uusd
-  });
+const withdraw_function = async () => {
+  rl.question("Amount to withdraw: ", async input => {
+    const withdraw = await anchorEarn.withdraw({
+      currency: DENOMS.UST,
+      amount: String(input), // 12.345 UST or 12345000 uusd
+    });
 
-  console.log("Withdrew: ", amount);
-  console.log("New Balance" + retrieve_balance()); 
-  return withdraw; 
+    console.log("Withdrew: ", input);
+    console.log("New Balance" + retrieve_balance()); 
+    return withdraw; 
+  }) 
+
+  rl.close(); 
 }
 
 
@@ -66,31 +68,37 @@ const retrieve_balance = async () => {
     ],
   });
 
+  console.log("--------------------------------------------------------")
   console.log("Account balance: ", balanceInfo.balances[0].account_balance); 
   console.log("Deposit balance: ", balanceInfo.balances[0].deposit_balance); 
-}
-
-/* TODO: user input function -- Not implemented */ 
-const mainUserInput = async () => {
-  let userInput = ""; 
-  prompt.start(); 
-  console.log("Functionality: (1) Deposit UST, (2) Withdraw UST, (3) Retrieve Balance"); 
-  const res = prompt.get(["input"], function(err, res){
-      return res; 
-  });
+  console.log("--------------------------------------------------------")
 }
 
 /* Main Control Structure -- useless right now*/ 
 const actualControlStructure = () => {
 
-  rl.question('(1) Deposit | (2) Withdraw | (3) Balance ?', input => {
-    readline.close();
+  rl.question('(1) Deposit | (2) Withdraw | (3) Balance => ', input => {
+
+    if (int(input) == 1) {
+        deposit_function(); 
+
+    } else if (int(input) == 2) {
+        withdraw_function(); 
+
+    } else if (int(input) == 3) {
+        retrieve_balance(); 
+
+    } else if (int(input) == 4) {
+      console.log("Come back soon!");
+      return; 
+
+    } else {
+      console.log("Not valid input."); 
+      actualControlStructure(); 
+    }
+
+    rl.close();
   });
-  console.log(input); 
-
-
-  // retrieve_balance(); 
-  deposit_function(0.00004); 
 }
 
 
