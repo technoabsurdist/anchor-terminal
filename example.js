@@ -1,7 +1,6 @@
 // terminal app to fetch info with anchor sdk
 import { DENOMS, Wallet, MnemonicKey, AnchorEarn, CHAINS, NETWORKS } from '@anchor-protocol/anchor-earn';
 import { int } from '@terra-money/terra.js';
-import prompt from "prompt"; 
 import readline from "readline"; 
 import dotenv from "dotenv"; 
 
@@ -29,34 +28,27 @@ const anchorEarn = new AnchorEarn({
       address: ADDR,
 });
 
-const deposit_function = async () => {
-  rl.question("Amount to deposit: ", async input => {
-    const deposit = await anchorEarn.deposit({
-      currency: DENOMS.UST,
-      amount: String(input), // 12.345 UST or 12345000 uusd
-    });
-    console.log("Deposited: " + input)
-    console.log("New Balance" + retrieve_balance()); 
-    return deposit;
-  }); 
+const deposit_function = async (amount) => {
+  const deposit = await anchorEarn.deposit({
+    currency: DENOMS.UST,
+    amount: String(amount), // 12.345 UST or 12345000 uusd
+  });
 
-  rl.close();    
+  console.log("Deposited: " + input);
+  console.log("New Balance" + retrieve_balance()); 
+  return deposit;
 }
 
 /* Function to withdraw money from main lending account */ 
-const withdraw_function = async () => {
-  rl.question("Amount to withdraw: ", async input => {
-    const withdraw = await anchorEarn.withdraw({
-      currency: DENOMS.UST,
-      amount: String(input), // 12.345 UST or 12345000 uusd
-    });
+const withdraw_function = async (amount) => {
+  const withdraw = await anchorEarn.withdraw({
+    currency: DENOMS.UST,
+    amount: String(amount), // 12.345 UST or 12345000 uusd
+  });
 
-    console.log("Withdrew: ", input);
-    console.log("New Balance" + retrieve_balance()); 
-    return withdraw; 
-  }) 
-
-  rl.close(); 
+  console.log("Withdrew: ", input);
+  console.log("New Balance" + retrieve_balance()); 
+  return withdraw; 
 }
 
 
@@ -75,21 +67,29 @@ const retrieve_balance = async () => {
 }
 
 /* Main Control Structure -- useless right now*/ 
-const actualControlStructure = () => {
+const actualControlStructure = async () => {
 
-  rl.question('(1) Deposit | (2) Withdraw | (3) Balance => ', input => {
+  rl.question('(1) Deposit | (2) Withdraw | (3) Balance | (4) Quit => ', async input => {
 
     if (int(input) == 1) {
-        deposit_function(); 
+        rl.close(); 
+        rl.question("Amount to deposit => ", amount => {
+            deposit_function(int(amount)); 
+        })
+        rl.close(); 
 
     } else if (int(input) == 2) {
-        withdraw_function(); 
+        rl.close(); 
+        rl.question("Amount to withdraw => ", amount => {
+            withdraw_function(int(amount)); 
+        })
+        rl.close(); 
 
     } else if (int(input) == 3) {
         retrieve_balance(); 
 
     } else if (int(input) == 4) {
-      console.log("Come back soon!");
+      console.log("Bye! Come back soon!");
       return; 
 
     } else {
