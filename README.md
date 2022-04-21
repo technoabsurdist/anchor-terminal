@@ -1,5 +1,14 @@
-Deposit, Withdraw, and Get your balance of Anchor Protocol 
+Deposit, Withdraw, and Get your balance of Anchor Protocol from the comfort of your terminal
 
---Challenge with friend to see who can do a cooler crypto app in one hour-- 
+Functionality: 
+
+(1) Deposit
+
+(2) Withdrawal 
+
+(3) Check Balance
+
+(4) Quit
 <br />
+
 Made by @technoabsurdist
